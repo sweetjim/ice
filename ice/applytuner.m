@@ -1,7 +1,9 @@
 function [out,xi,yi] = applytuner(args,varargin)
 %% Apply Tuner
 % This function applies the output arguments of the GUI program 'tuner'.
-% Parameters include:
+% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
+% % Parameters
 %   args: [struct] (Required)
 %   method: [char] (Optional)
 %       'filter'
@@ -17,7 +19,8 @@ function [out,xi,yi] = applytuner(args,varargin)
 %       'image'
 %       'pipeline' 
 %       'none' (default)
-
+% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
 
 [method,in,output] = parseInput(varargin);
 
