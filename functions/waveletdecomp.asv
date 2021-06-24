@@ -1,0 +1,37 @@
+function waveletdecomp(in,levels,method,varargin)
+
+if nargin>3
+    
+else
+    
+end
+%% Wavelet decomposition (2 level)
+n = levels; 
+w = method; 
+[C,S] = wavedec2(in,n,w);
+
+[dec,A,H,V,D] = waveletLevel(n);
+
+figure(1)
+tiledlayout(2,2)
+nexttile
+imagesc(A)
+nexttile
+imagesc(H)
+nexttile
+imagesc(V)
+nexttile
+imagesc(H-D)
+
+
+    function [dec,Ai,Hi,Vi,Di] = waveletLevel(level)
+        Ai = appcoef2(C,S,w,level); % Approximation
+        [Hi,Vi,Di] = detcoef2('a',C,S,level); % Details
+        Ai = wcodemat(Ai,128);
+        Hi = wcodemat(Hi,128);
+        Vi = wcodemat(Vi,128);
+        Di = wcodemat(Di,128);
+        dec = [Ai Hi;Vi Di];
+    end
+end
+

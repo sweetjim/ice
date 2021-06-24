@@ -1,0 +1,10 @@
+function save2folder(args,new_struct,struct_name)
+root        = fullfile(cd,'results');
+[~,name,~]  = fileparts(args.files(1).folder);
+folder      = fullfile(root,name);
+
+eval(
+
+save(folder,new_struct,'-append')
+end
+

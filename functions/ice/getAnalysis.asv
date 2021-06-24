@@ -1,0 +1,107 @@
+function getAnalysis(args,varargin)
+step  = 1;
+loop  = 1:step:length(args.files);
+[colormode,mode,rerun,dt_str] = parseInput(varargin);
+%%
+persistent Z T
+if rerun||(isempty(Z)&&isempty(T))
+    
+    dt     = getdt(args.files,step*2,dt_str);
+    
+    T       = 0:dt:(dt*loop(end)-1);
+    Z       = zeros(size(args.out,1),length(loop));
+    X       = zeros(size(Z));
+    j       = 1;
+    for i=loop
+        [~,xi,zi]    = applytuner(args,'all',i);
+        Z(:,j)       = xi;
+        X(:,j)       = zi;
+        j            = j+1;
+        displayProgress('Progress',i,loop(1),loop(end))
+    end
+end
+%%
+Zspan   = 1.1;
+ds      = Zspan/length(Z);
+z       = linspace(0,Zspan,length(Z));
+
+switch colormode
+    case 'default'
+        C = Z*ds;
+        clabel = '$h$ (cm)';
+    case 'gradient'
+        [C,~] = gradient(Z*ds);
+        clabel = '$\partial_t h$ (cm/min)';
+end
+
+switch mode
+    case 'waterfall'
+        waterfall(z,T,Z'*ds,C')
+    case 'surf'
+        surf(z,T,Z'*ds,C')
+        shading interp
+    case 'contour'
+        %%
+        clf
+        surf(z,T,Z'*ds,C')
+        hold on
+        caxis(max(caxis).*[-1 1])
+        cmocean('balance','pivot',0,2^5)
+        contour3(z,T,Z'*ds,'k')
+        hold off
+        shading interp
+        view(0,90)
+end
+%%
+c = colorbar;
+c.Label.String = clabel;
+c.Label.Interpreter = 'latex';
+c.TickLabelInterpreter = 'latex';
+c.FontSize = 15;
+ylabel(sprintf('%s (%s)','$t$',dt_str),'Interpreter','latex')
+xlabel('$z$ (cm)','Interpreter','latex')
+zlabel('$h$ (cm)','Interpreter','latex')
+set(gca,'TickLabelInterpreter','latex','FontSize',15)
+%% Outputs
+analysis = struct(...
+    'z',z,...
+    't',T,...
+    'h',Z);
+assignin('base','analysis'
+
+%% Functions
+    function [colormode,mode,rerun,dt_str] = parseInput(varargin)
+        
+        colormode   = 'default';
+        mode        = 'surf';
+        rerun       = false;
+        dt_str      = 'min';
+        
+        m = 1;
+        items = varargin{:};
+        for k=1:length(items)
+            %%
+            switch items{m}
+                %% Nane arguments
+                case {'default','gradient'}
+                    colormode = items{m};
+                case {'waterfall','surf','contour'}
+                    mode    = items{m};
+                case 'rerun'
+                    rerun   = true;
+                case {'sec','min','hour'}
+                    dt_str  = items{m};
+                %% Name-value arguments
+                case 'loop'
+                    loop    = items{m+1};
+                    m       = m+1;
+                case 'step'
+                    step    = items{m+1};
+                    m       = m+1;
+            end
+            m = m+1;
+            if m>length(items);break;end
+        end
+    end
+end
+

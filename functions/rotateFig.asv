@@ -1,0 +1,24 @@
+function out = rotateFig(fig,dir)
+pos = fig.Position;
+
+corners = [pos(1) pos(2);
+    pos(1)+pos(3) pos(2);
+    pos(1) pos(2)+pos(4);
+    pos(1)+pos(3) pos(2)+pos(4)];
+
+screen = get(0,'ScreenSize');
+
+corners(:,1) = corners(:,1)/screen(3);
+corners(:,2) = corners(:,2)/screen(4);
+
+
+
+switch dir
+    case 'sideways'
+        
+    case 'upright'
+        
+end
+
+end
+
